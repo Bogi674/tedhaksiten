@@ -28,6 +28,7 @@
     document.body.classList.remove('locked');
     document.body.classList.add('open');
     window.scrollTo(0, 0);
+    watchPage();
     if (hasMusic) {
       musicBtn.hidden = false;
       audio.play().then(function () { musicBtn.classList.add('playing'); }).catch(function () {});
@@ -76,15 +77,13 @@
     list.forEach(function (src, i) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'reveal';
+      b.className = 'zoomblur';
+      b.style.animationDelay = (i % 4) * 0.15 + 's';
       b.setAttribute('aria-label', 'Lihat foto ' + (i + 1));
       var img = new Image();
       img.loading = 'lazy';
       img.src = src;
       img.alt = 'Galeri ' + (i + 1);
-      img.onload = function () {
-        if (img.naturalWidth > img.naturalHeight * 1.2) b.classList.add('wide');
-      };
       b.appendChild(img);
       b.addEventListener('click', function () { openLb(i); });
       grid.appendChild(b);
@@ -117,13 +116,23 @@
     touchX = null;
   });
 
-  // ---------- Reveal on scroll ----------
+  // ---------- Reveal on scroll (entrance animations) ----------
+  var REVEAL = '.from-top,.from-bottom,.fade,.zoomin,.zoomblur';
   var observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (en) {
       if (en.isIntersecting) { en.target.classList.add('in'); observer.unobserve(en.target); }
     });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach(function (el) { observer.observe(el); });
+  }, { threshold: 0.12 });
+  // cover animates immediately; page content only after the invitation is opened
+  cover.querySelectorAll(REVEAL).forEach(function (el) { el.classList.add('in'); });
+  function watchPage() {
+    document.querySelectorAll('.phone > .sec ' + REVEAL.split(',').join(', .phone > .sec ')).forEach(function (el) {
+      observer.observe(el);
+    });
+    document.querySelectorAll('.phone > .sec').forEach(function (sec) {
+      sec.querySelectorAll(':scope > .bgf').forEach(function (el) { observer.observe(el); });
+    });
+  }
 
   fetch('/gallery.json', { cache: 'no-store' })
     .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
