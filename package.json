@@ -1,0 +1,9 @@
+{
+  "name": "tedhaksiten",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-gallery.mjs",
+    "dev": "node scripts/build-gallery.mjs && npx serve public"
+  }
+}

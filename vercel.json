@@ -1,0 +1,9 @@
+{
+  "buildCommand": "node scripts/build-gallery.mjs",
+  "outputDirectory": "public",
+  "framework": null,
+  "cleanUrls": true,
+  "headers": [
+    { "source": "/gallery.json", "headers": [{ "key": "Cache-Control", "value": "no-store" }] }
+  ]
+}
